@@ -7,8 +7,8 @@ ifeq ($(shell uname -o 2>/dev/null),Cygwin)
 	OS := CYGWIN
 endif
 
-CXXFLAGS = -g -O1 -fopenmp -Wall -fmessage-length=0 -I/usr/local/cuda/include -I../boost/
-
+CXXFLAGS = -g -O1 -std=c++14 -fopenmp -Wall -fmessage-length=0 -I/usr/local/cuda/include
+CXXFLAGS += -std=c++14 -Wold-style-cast -pedantic -ggdb 
 OBJS = CRandomGenerator.o CSelectionOperator.o CEvolutionaryAlgorithm.o\
 	   CStoppingCriterion.o COptionParser.o CPopulation.o CIndividual.o\
 	CGrapher.o CCmaes.o CCmaesCuda.o Parameters.o CGPNode.o\
@@ -38,7 +38,7 @@ $(TARGET): $(OBJS)
 	ar rcs $@ $^ 
 
 %.o:%.cpp
-	$(CXX) $(LIBS) -c $(CXXFLAGS) $(CPPFLAGS) $^ 
+	$(CXX) $(LIBS) -c -std=c++14 -I/home/anna/Documents/EASEA/easea-master/cxxopts -Wall -Wextra -Wold-style-cast -pedantic -ggdb -Wold-style-cast $(CXXFLAGS) $(CPPFLAGS) $^ 
 
 all:	$(TARGET)
 clean:

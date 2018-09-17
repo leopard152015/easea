@@ -1,0 +1,3 @@
+# Hashes of file build rules.
+c59e15cf0c949ea7b05862136174168b compiler/EaseaLex.cpp
+c842470e81abc913bbe79d538d4772cc compiler/EaseaParse.cpp
