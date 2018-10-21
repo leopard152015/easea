@@ -61,10 +61,10 @@ public:
                 delete aux; // Remove it from the population
                 TPopulation::pop_vect.erase (TPopulation::pop_vect.begin()+i);
             } else {
-                if (equals_->compare(aux,individual)==0) {
+                //if (equals_->compare(aux,individual)==0) {
                 // There are equals individuals in the population
-                    return false; // Reject the new individual
-                }
+                //    return false; // Reject the new individual
+            //    }
                 i++;
             }
         }

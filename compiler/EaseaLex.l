@@ -2608,6 +2608,9 @@ int CEASEALexer_create(CSymbolTable* pSymTable)
 	strcat(sTemp, "ASREA.tpl");
 	std::cout << "STD:ASREA" << std::endl;
     }
+    else if (TARGET_FLAVOR == ASREAII){
+	strcat(sTemp, "ASREAII.tpl");
+    }
     else if (TARGET_FLAVOR == MEMETIC )
       strcat(sTemp,"STD_MEM.tpl");
     //else if (TARGET_FLAVOR == STD_FLAVOR_GP )

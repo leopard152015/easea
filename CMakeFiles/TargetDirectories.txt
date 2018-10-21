@@ -1,0 +1,10 @@
+/home/anna/Documents/EASEA/GITHUB/easea/CMakeFiles/edit_cache.dir
+/home/anna/Documents/EASEA/GITHUB/easea/CMakeFiles/package_source.dir
+/home/anna/Documents/EASEA/GITHUB/easea/CMakeFiles/rebuild_cache.dir
+/home/anna/Documents/EASEA/GITHUB/easea/CMakeFiles/package.dir
+/home/anna/Documents/EASEA/GITHUB/easea/CMakeFiles/list_install_components.dir
+/home/anna/Documents/EASEA/GITHUB/easea/CMakeFiles/install.dir
+/home/anna/Documents/EASEA/GITHUB/easea/CMakeFiles/libeasea.dir
+/home/anna/Documents/EASEA/GITHUB/easea/CMakeFiles/easea.dir
+/home/anna/Documents/EASEA/GITHUB/easea/CMakeFiles/install/local.dir
+/home/anna/Documents/EASEA/GITHUB/easea/CMakeFiles/install/strip.dir

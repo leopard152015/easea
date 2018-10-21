@@ -48,10 +48,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/anna/Documents/git/easea
+CMAKE_SOURCE_DIR = /home/anna/Documents/EASEA/GITHUB/easea
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/anna/Documents/git/easea
+CMAKE_BINARY_DIR = /home/anna/Documents/EASEA/GITHUB/easea
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -70,7 +70,7 @@ edit_cache/fast: edit_cache
 # Special rule for the target package_source
 package_source:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Run CPack packaging tool for source..."
-	/usr/bin/cpack --config ./CPackSourceConfig.cmake /home/anna/Documents/git/easea/CPackSourceConfig.cmake
+	/usr/bin/cpack --config ./CPackSourceConfig.cmake /home/anna/Documents/EASEA/GITHUB/easea/CPackSourceConfig.cmake
 .PHONY : package_source
 
 # Special rule for the target package_source
@@ -146,9 +146,9 @@ install/strip/fast: install/strip
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/anna/Documents/git/easea/CMakeFiles /home/anna/Documents/git/easea/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/anna/Documents/EASEA/GITHUB/easea/CMakeFiles /home/anna/Documents/EASEA/GITHUB/easea/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/anna/Documents/git/easea/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/anna/Documents/EASEA/GITHUB/easea/CMakeFiles 0
 .PHONY : all
 
 # The main clean target

@@ -21,7 +21,7 @@
 \ANALYSE_PARAMETERS
 #include <stdlib.h>
 #include <iostream>
-#include <chrono>
+//#include <chrono>
 #include <string>
 
 #include "COptionParser.h"
@@ -63,15 +63,15 @@ int main(int argc, char** argv){
 
 	    EASEAInit(argc,argv);
   
-        auto tmStart = std::chrono::system_clock::now();
+//        auto tmStart = std::chrono::system_clock::now();
 	    
         ea->runEvolutionaryMultiObjectivesLoop();
         
-        std::chrono::duration<double> tmDur = std::chrono::system_clock::now() - tmStart;
+//        std::chrono::duration<double> tmDur = std::chrono::system_clock::now() - tmStart;
         
-        ostringstream msg;
-        msg <<  "Total execution time (in sec.): " << tmDur.count();
-        LOG_MSG(msgType::INFO, msg.str());
+//        ostringstream msg;
+//        msg <<  "Total execution time (in sec.): " << tmDur.count();
+//        LOG_MSG(msgType::INFO, msg.str());
 
 	    //EASEAFinal(pop);
 
@@ -97,6 +97,7 @@ int main(int argc, char** argv){
 #include <sstream>
 #include <map>
 #include <iostream>
+#include <chrono>
 
 #include "CRandomGenerator.h"
 //#include "CPopulation.h"
@@ -418,6 +419,8 @@ void EvolutionaryAlgorithmImpl::runEvolutionaryMultiObjectivesLoop(){
 
    // Create Random Initial population
     LOG_MSG(msgType::INFO, "Starting Random Initialization of Population...");
+       auto tmStart = std::chrono::system_clock::now();
+
     for (int i = 0; i < parentPopulationSize; i++) {
         IndividualImpl * newIndividual = new IndividualImpl();
         newIndividual->evaluate(); // Evaluate ini_pop
@@ -511,6 +514,10 @@ void EvolutionaryAlgorithmImpl::runEvolutionaryMultiObjectivesLoop(){
 
     delete distance;
 
+        std::chrono::duration<double> tmDur = std::chrono::system_clock::now() - tmStart;
+        ostringstream msg;
+        msg <<  "Total execution time (in sec.): " << tmDur.count();
+        LOG_MSG(msgType::INFO, msg.str());
     // Return the first non-dominated front
     auto ranking = new CRanking<IndividualImpl, PopulationImpl>(population);
     PopulationImpl * result = new PopulationImpl(ranking->getSubfront(0)->size());

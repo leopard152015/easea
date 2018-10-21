@@ -33,6 +33,7 @@ Centre de Math?matiques Appliqu?es
 #define FLAVOR_GP 2
 #define NSGAII 11 
 #define ASREA  12
+#define ASREAII 15
 
 
 #define UNIX 1

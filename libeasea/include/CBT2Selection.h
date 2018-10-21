@@ -24,12 +24,14 @@ class CBT2Selection : public COperator<> {
 
 private:
     int index_;
+    int lastSize_;
     int *permutation_;
     CComparator<TIndividual> *dominance_;
 public:
     CBT2Selection() : COperator(){
 
         index_ = 0;
+	lastSize_ = 0;
         permutation_ = new int[1]; // must be initialized
         if (permutation_ == nullptr)
             LOG_ERROR(errorCode::memory, "memory for a_ wasn't allocated");
@@ -43,15 +45,18 @@ public:
         delete dominance_;
         delete [] permutation_;
     };
-
+    
     TIndividual *run(TPopulation *p){
-
+	if (lastSize_ != p->size())
+	    index_ = 0;
         if (index_ == 0) //Create the permutation for selecting two individuals randomly
         {
             auto permutation = std::make_unique<CPermutation>();
             delete [] permutation_;
             permutation_ = permutation->intPermutation(p->size());
+	    lastSize_ = p->size();
         }
+	
         /* Selection of two individuals */
         TIndividual *ind1 = p->get(permutation_[index_]);
         TIndividual *ind2 = p->get(permutation_[index_+1]);

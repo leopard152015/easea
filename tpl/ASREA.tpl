@@ -21,7 +21,7 @@ Sharma, D., Collet, P.: An archived-based stochastic ranking   evolutionary algo
 #include <iostream>
 #include <time.h>
 #include <string>
-#include <chrono>
+//#include <chrono>
 
 #include "COptionParser.h"
 #include "CRandomGenerator.h"
@@ -63,15 +63,15 @@ int main(int argc, char** argv){
 
 	    EASEAInit(argc,argv);
   
-      auto tmStart = std::chrono::system_clock::now();
+//      auto tmStart = std::chrono::system_clock::now();
 	    
       ea->runEvolutionaryMultiObjectivesLoop();
         
-      std::chrono::duration<double> tmDur = std::chrono::system_clock::now() - tmStart;
+//      std::chrono::duration<double> tmDur = std::chrono::system_clock::now() - tmStart;
         
       ostringstream msg;
-      msg <<  "Total execution time (in sec.): " << tmDur.count();
-      LOG_MSG(msgType::INFO, msg.str());
+//      msg <<  "Total execution time (in sec.): " << tmDur.count();
+//      LOG_MSG(msgType::INFO, msg.str());
 
 	    //EASEAFinal(pop);
 
@@ -97,6 +97,7 @@ int main(int argc, char** argv){
 #include <sstream>
 #include <map>
 #include <iostream>
+#include <chrono>
 
 #include "CRandomGenerator.h"
 //#include "CPopulation.h"
@@ -419,6 +420,7 @@ void EvolutionaryAlgorithmImpl::runEvolutionaryMultiObjectivesLoop(){
   auto selectRandomOperator = make_unique< CRandomSelection<IndividualImpl,PopulationImpl>>();
    // Create Random Initial population
   LOG_MSG(msgType::INFO, "Starting Random Initialization of Population...");
+  auto tmStart = std::chrono::system_clock::now();
   for (int i = 0; i < parentPopulationSize; i++) {
       IndividualImpl * newIndividual = new IndividualImpl();
       newIndividual->evaluate(); // Evaluate ini_pop
@@ -434,8 +436,8 @@ void EvolutionaryAlgorithmImpl::runEvolutionaryMultiObjectivesLoop(){
         offspringPopulation = new PopulationImpl(offspringPopulationSize);
         
         IndividualImpl ** parents = new IndividualImpl*[2];
-    
-        for (auto i = 0; i < (parentPopulationSize / 2); i++) {
+	auto tmStartTmp = std::chrono::system_clock::now();    
+        for (auto i = 0; i < (offspringPopulationSize / 2); i++) {
 
             if (evaluations < maxEvaluations) {
                 //obtain parents
@@ -459,11 +461,15 @@ void EvolutionaryAlgorithmImpl::runEvolutionaryMultiObjectivesLoop(){
 
             }
         } 
+	std::chrono::duration<double> tmDurTmp = std::chrono::system_clock::now()-tmStartTmp;
+	ostringstream msgTmp;
+	msgTmp << "Offspring production time (in sec.): " << tmDurTmp.count();
+	LOG_MSG(msgType::INFO, msgTmp.str());
         delete[] parents;
-auto ranking = new CRanking<IndividualImpl,PopulationImpl>(offspringPopulation, archivePopulation);
+//auto ranking = new CRanking<IndividualImpl,PopulationImpl>(offspringPopulation, archivePopulation);
         
    /***********Update archive*****************/
-
+   tmStartTmp = std::chrono::system_clock::now();
    for (int i = 0; i < offspringPopulation->size(); i++) {
       IndividualImpl * ind = new IndividualImpl(offspringPopulation->get(i));
       bool isAdded = archivePopulation->add(ind);
@@ -471,11 +477,15 @@ auto ranking = new CRanking<IndividualImpl,PopulationImpl>(offspringPopulation, 
         delete ind;
       }
     }
-    
+tmDurTmp = std::chrono::system_clock::now()-tmStartTmp;
+ostringstream msgTmp1;
+msgTmp1 << "Update Archive time (in sec.): " << tmDurTmp.count();
+LOG_MSG(msgType::INFO, msgTmp1.str());
+
     //Select good individuals to create parent_pop for the next generation.
     
     int remain = parentPopulationSize;
-    
+    //parentPopulationSize = archivePopulation->size();
     //Clear parent_pop
     //PopulationImpl * front = NULL;
     for (int i=0;i<population->size();i++) {
@@ -486,6 +496,7 @@ auto ranking = new CRanking<IndividualImpl,PopulationImpl>(offspringPopulation, 
     auto cp = new CCrowdingDistanceComparator<IndividualImpl>();
 
     //Get the extreme solution of arch_pop
+//int p = archivePopulation->bestIndex(cp);
   
     for (int k = 0; k < archivePopulation->size(); k++) {
         population->add(new IndividualImpl(archivePopulation->get(k)));
@@ -538,15 +549,28 @@ auto ranking = new CRanking<IndividualImpl,PopulationImpl>(offspringPopulation, 
         }
          
       }
-      delete ranking;
+//      delete ranking;
+//      delete offspringPopulation;
+if (evaluations < maxEvaluations){
       delete offspringPopulation;
+//std::cout << "DEL" << std::endl;
+}
 
       } // while
+  std::chrono::duration<double>tmDur = std::chrono::system_clock::now() - tmStart;
+  ostringstream msg;
+  msg << "Total execution time (in sec.): " << tmDur.count();
+  LOG_MSG(msgType::INFO, msg.str());
 
-  PopulationImpl * result = new PopulationImpl(archivePopulation->size());
+/*  PopulationImpl * result = new PopulationImpl(archivePopulation->size());
   for (int i=0;i<archivePopulation->size();i++) {
     result->add(new IndividualImpl(archivePopulation->get(i)));
   }
+*/
+    auto ranking = new CRanking<IndividualImpl, PopulationImpl>(offspringPopulation);
+    PopulationImpl * result = new PopulationImpl(ranking->getSubfront(0)->size());
+    for (auto i=0; i < ranking->getSubfront(0)->size(); i++)
+        result->add(new IndividualImpl(ranking->getSubfront(0)->get(i)));
 
 
 	LOG_MSG(msgType::INFO,"Variables values are in file variables");
@@ -679,6 +703,24 @@ int PopulationImpl::indexWorst(CComparator<IndividualImpl> * comparator){
   return index;
 }
 
+int PopulationImpl::indexBest(CComparator<IndividualImpl> * comparator){
+  if (pop_vect.empty()) {
+    return -1;
+  }
+  int index = 0;
+  IndividualImpl * bestKnown = pop_vect[0];
+  IndividualImpl * candidateSolution;
+  int flag;
+  for (int i = 1; i < pop_vect.size(); i++) {
+    candidateSolution = pop_vect[i];
+    flag = comparator->compare(bestKnown, candidateSolution);
+    if (flag == 1) {
+      index = i;
+      bestKnown = candidateSolution;
+    }
+  }
+  return index;
+}
 
 void PopulationImpl::printVariablesToFile(string file) {
     std::ofstream out(file.c_str());
@@ -786,6 +828,8 @@ public:
     inline auto size() const { return pop_vect.size(); }
     void clear(){ pop_vect.clear(); }
     int indexWorst(CComparator<IndividualImpl> * comparator);
+    int indexBest(CComparator<IndividualImpl> * comparator);
+
     void remove(int id);
     void sort(CComparator<IndividualImpl> * comparator);
     void printObjectivesToFile(string path);
