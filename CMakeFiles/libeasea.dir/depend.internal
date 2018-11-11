@@ -19,6 +19,7 @@ CMakeFiles/libeasea.dir/libeasea/CEvolutionaryAlgorithm.cpp.o
  /home/anna/Documents/EASEA/GITHUB/easea/libeasea/include/CEvolutionaryAlgorithm.h
  /home/anna/Documents/EASEA/GITHUB/easea/libeasea/include/CGrapher.h
  /home/anna/Documents/EASEA/GITHUB/easea/libeasea/include/CIndividual.h
+ /home/anna/Documents/EASEA/GITHUB/easea/libeasea/include/CLogger.h
  /home/anna/Documents/EASEA/GITHUB/easea/libeasea/include/CPopulation.h
  /home/anna/Documents/EASEA/GITHUB/easea/libeasea/include/CRandomGenerator.h
  /home/anna/Documents/EASEA/GITHUB/easea/libeasea/include/CSelectionOperator.h

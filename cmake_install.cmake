@@ -33,12 +33,6 @@ if(NOT DEFINED CMAKE_INSTALL_SO_NO_EXE)
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  if(EXISTS "$ENV{DESTDIR}/usr/local/easea/bin/easea" AND
-     NOT IS_SYMLINK "$ENV{DESTDIR}/usr/local/easea/bin/easea")
-    file(RPATH_CHECK
-         FILE "$ENV{DESTDIR}/usr/local/easea/bin/easea"
-         RPATH "")
-  endif()
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
    "/usr/local/easea/bin/easea")
   if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
@@ -48,12 +42,6 @@ if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspeci
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
 file(INSTALL DESTINATION "/usr/local/easea/bin" TYPE EXECUTABLE FILES "/home/anna/Documents/EASEA/GITHUB/easea/easea")
-  if(EXISTS "$ENV{DESTDIR}/usr/local/easea/bin/easea" AND
-     NOT IS_SYMLINK "$ENV{DESTDIR}/usr/local/easea/bin/easea")
-    if(CMAKE_INSTALL_DO_STRIP)
-      execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}/usr/local/easea/bin/easea")
-    endif()
-  endif()
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")

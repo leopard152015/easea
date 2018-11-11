@@ -28,9 +28,12 @@
 #include "include/global.h"
 #include "include/CComUDPLayer.h"
 #include "include/CRandomGenerator.h"
+#include "include/CLogger.h"
 #include <stdio.h>
 #include <sstream>
+#include <iostream>
 #include <fstream>
+#include <sys/wait.h>
 
 //#define INSTRUMENTED
 #ifdef INSTRUMENTED
@@ -93,10 +96,39 @@ extern bool INSTEAD_EVAL_STEP;
 /*****
  * REAL CONSTRUCTOR
  */
+sig_atomic_t volatile done = 1;
+void childHandler(int signum)
+{
+        pid_t w;
+        int status;
+	ostringstream ss;
+
+        while((w=waitpid(-1, &status, WNOHANG))>0)
+        {
+            if(WIFEXITED(status)){
+                ss << "Display process catched exiting signal and was stopped" << std::endl;
+		LOG_MSG(msgType::WARNING, ss.str());
+		done = 0;
+        }
+        else if (WIFSIGNALED(status)){
+                ss << "Display process catched terminating signal and was stopped" << std::endl;
+		LOG_MSG(msgType::WARNING, ss.str());
+                done = 0;
+        }
+        else if (WIFSTOPPED(status)){
+                 ss << "Display process catched stopping signal and was stopped" << std::endl;
+		 LOG_MSG(msgType::WARNING, ss.str());
+                 done = 0;
+        }
+
+}//!WIFEXITED(status) && !WIFSIGNALED(status));
+
+}
+
 CEvolutionaryAlgorithm::CEvolutionaryAlgorithm(Parameters* params){
   this->params = params;
     this->cstats = new CStats();
-
+signal(SIGCHLD, childHandler);
   CPopulation::initPopulation(params->selectionOperator,params->replacementOperator,params->parentReductionOperator,params->offspringReductionOperator,
       params->selectionPressure,params->replacementPressure,params->parentReductionPressure,params->offspringReductionPressure);
 
@@ -169,10 +201,12 @@ void CEvolutionaryAlgorithm::addStoppingCriterion(CStoppingCriterion* sc){
 /* MAIN FUNCTION TO RUN THE EVOLUTIONARY LOOP */
 void CEvolutionaryAlgorithm::runEvolutionaryLoop(){
   CIndividual** elitistPopulation = NULL;
-
+    
 #ifdef WIN32
+
    clock_t begin(clock());
 #else
+
   struct timeval begin;
   gettimeofday(&begin,0);
 #endif
@@ -229,6 +263,11 @@ void CEvolutionaryAlgorithm::runEvolutionaryLoop(){
   while( this->allCriteria() == false){
 
     EASEABeginningGenerationFunction(this);
+    if (done == 0){
+        delete this->grapher;
+	this->params->plotStats = 0;
+	done = 1;
+    }
 
     // Sending individuals if remote island model
     if(params->remoteIslandModel && this->numberOfClients>0)

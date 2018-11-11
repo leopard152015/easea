@@ -87,11 +87,17 @@ include/CComUDPLayer.h
 /home/anna/Documents/EASEA/GITHUB/easea/libeasea/include/CComUDPLayer.h
 include/CRandomGenerator.h
 /home/anna/Documents/EASEA/GITHUB/easea/libeasea/include/CRandomGenerator.h
+include/CLogger.h
+/home/anna/Documents/EASEA/GITHUB/easea/libeasea/include/CLogger.h
 stdio.h
 -
 sstream
 -
+iostream
+-
 fstream
+-
+sys/wait.h
 -
 timing.h
 -
@@ -337,6 +343,16 @@ iostream
 -
 CVariable.h
 /home/anna/Documents/EASEA/GITHUB/easea/libeasea/include/CVariable.h
+
+/home/anna/Documents/EASEA/GITHUB/easea/libeasea/include/CLogger.h
+cstdio
+-
+stdexcept
+-
+string
+-
+vector
+-
 
 /home/anna/Documents/EASEA/GITHUB/easea/libeasea/include/COptionParser.h
 

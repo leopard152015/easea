@@ -18,6 +18,7 @@ CMakeFiles/libeasea.dir/libeasea/CEvolutionaryAlgorithm.cpp.o: libeasea/include/
 CMakeFiles/libeasea.dir/libeasea/CEvolutionaryAlgorithm.cpp.o: libeasea/include/CEvolutionaryAlgorithm.h
 CMakeFiles/libeasea.dir/libeasea/CEvolutionaryAlgorithm.cpp.o: libeasea/include/CGrapher.h
 CMakeFiles/libeasea.dir/libeasea/CEvolutionaryAlgorithm.cpp.o: libeasea/include/CIndividual.h
+CMakeFiles/libeasea.dir/libeasea/CEvolutionaryAlgorithm.cpp.o: libeasea/include/CLogger.h
 CMakeFiles/libeasea.dir/libeasea/CEvolutionaryAlgorithm.cpp.o: libeasea/include/CPopulation.h
 CMakeFiles/libeasea.dir/libeasea/CEvolutionaryAlgorithm.cpp.o: libeasea/include/CRandomGenerator.h
 CMakeFiles/libeasea.dir/libeasea/CEvolutionaryAlgorithm.cpp.o: libeasea/include/CSelectionOperator.h
