@@ -34,7 +34,8 @@
 #include <iostream>
 #include <fstream>
 #include <sys/wait.h>
-
+#include <chrono>
+#include <ctime>
 //#define INSTRUMENTED
 #ifdef INSTRUMENTED
 #define TIMING
@@ -260,6 +261,7 @@ void CEvolutionaryAlgorithm::runEvolutionaryLoop(){
     elitistPopulation = (CIndividual**)malloc(params->elitSize*sizeof(CIndividual*)); 
 
   // EVOLUTIONARY LOOP
+ auto start = std::chrono::system_clock::now();
   while( this->allCriteria() == false){
 
     EASEABeginningGenerationFunction(this);
@@ -336,7 +338,13 @@ void CEvolutionaryAlgorithm::runEvolutionaryLoop(){
     //delete this->grapher;
   //}
 //#endif
-
+    auto end = std::chrono::system_clock::now();
+ 
+    std::chrono::duration<double> elapsed_seconds = end-start;
+    std::time_t end_time = std::chrono::system_clock::to_time_t(end);
+ 
+    std::cout << "finished computation at " << std::ctime(&end_time)
+              << "elapsed time: " << elapsed_seconds.count() << "s\n";
   if(this->params->printFinalPopulation){
     population->sortParentPopulation();
     std::cout << *population << std::endl;

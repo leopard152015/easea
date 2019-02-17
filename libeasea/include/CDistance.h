@@ -33,26 +33,26 @@ public:
     CDistance(){};
 
  /* CD is assigned to all individuals (solutions) int the populations */
-    void allocCrowdingDistance(const TPopulation * population, const int &nbObjs){
+    void allocCrowdingDistance( TPopulation * population, const int nbObjs){
 
         int size = population->size();
         // first of all check the size of population
         if (size == 0)
             return;
         if (size == 1) {
-            population->get(0)->setCrowdingDistance(std::numeric_limits<double>::max());
+            population->pop_vect[0]->crowdingDistance_ = std::numeric_limits<double>::max();
             return;
         }
         if (size == 2) {
-            population->get(0)->setCrowdingDistance(std::numeric_limits<double>::max());
-            population->get(1)->setCrowdingDistance(std::numeric_limits<double>::max());
+            population->pop_vect[0]->crowdingDistance_ = std::numeric_limits<double>::max();
+            population->pop_vect[1]->crowdingDistance_ = std::numeric_limits<double>::max();
             return;
         }
         // Make copy of population
         auto front = std::make_unique<TPopulation>(size);
         for (auto i = 0; i < size; ++i){
-            front->add(population->get(i));
-	    front->get(i)->setCrowdingDistance(0.0);
+            front->add(population->pop_vect[i]);
+	    front->pop_vect[i]->crowdingDistance_ = 0.0;
 	}
 
         auto distance = double{0.0};
@@ -61,18 +61,18 @@ public:
             auto c = std::make_unique<CObjectiveComparator<TIndividual>>(i);
             front->sort(c.get()); // Sorting of population
 
-            auto minObj = front->get(0)->getObjective(i);
-            auto maxObj = front->get(front->size()-1)->getObjective(i);
+            auto minObj = front->pop_vect[0]->objective_[i];
+            auto maxObj = front->pop_vect[(front->size()-1)]->objective_[i];
 
             //Assign crowding distance
-            front->get(0)->setCrowdingDistance(std::numeric_limits<double>::max());
-            front->get(size-1)->setCrowdingDistance(std::numeric_limits<double>::max());
+            front->pop_vect[0]->crowdingDistance_ = std::numeric_limits<double>::max();
+            front->pop_vect[size-1]->crowdingDistance_ = std::numeric_limits<double>::max();
 
             for (auto j = 1; j < size-1; ++j) {
-                distance = front->get(j+1)->getObjective(i) - front->get(j-1)->getObjective(i);
+                distance = front->pop_vect[(j+1)]->objective_[i] - front->pop_vect[(j-1)]->objective_[i];
                 distance = distance / (maxObj - minObj);
-                distance += front->get(j)->getCrowdingDistance();
-                front->get(j)->setCrowdingDistance(distance);
+                distance += front->pop_vect[(j)]->crowdingDistance_;
+                front->pop_vect[(j)]->crowdingDistance_ = distance;
             }
         }
         front->clear();

@@ -31,7 +31,7 @@ public :
 
     ~CGaussianMutation(){};
 
-    TIndividual * run(const TIndividual * individual){
+    const TIndividual * run(const TIndividual * individual){
         mutation( get<double>(0), get<double>(1), individual);
         return individual;
     };
@@ -56,9 +56,9 @@ private:
 	return distribution(generator);
     }
 
-    TIndividual * mutation(const double &probability, const double &deviation, const TIndividual * individual){
-        double rnd;
-        double y, yl, yu, val;
+//    TIndividual * 
+	void mutation(const double &probability, const double &deviation, const TIndividual * individual){
+        double y, yl, yu;
 	double sigma;
         std::unique_ptr<CWrapIndividual>  x = std::make_unique<CWrapIndividual>(individual);
 

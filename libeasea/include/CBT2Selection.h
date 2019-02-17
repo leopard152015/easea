@@ -24,7 +24,7 @@ class CBT2Selection : public COperator<> {
 
 private:
     int index_;
-    int lastSize_;
+    size_t lastSize_;
     int *permutation_;
     CComparator<TIndividual> *dominance_;
 public:
@@ -63,14 +63,14 @@ public:
 
         index_ = (index_ + 2) % p->size();
 
-        auto res = int{dominance_->compare(ind1,ind2)};
+        auto res = int{dominance_->match(ind1,ind2)};
         if (res == -1)
             return ind1;                                                    // ind1 has lower rank
         else if (res == 1)
             return ind2;                                                    // ind2 has lower rank
-        else if (ind1->getCrowdingDistance() > ind2->getCrowdingDistance()) // ind1 and ind2 in the same dominated front
+        else if (ind1->crowdingDistance_ > ind2->crowdingDistance_) // ind1 and ind2 in the same dominated front
             return ind1;                                                    // ind1 has higher crowding distance
-        else if (ind2->getCrowdingDistance() > ind1->getCrowdingDistance())
+        else if (ind2->crowdingDistance_ > ind1->crowdingDistance_)
             return ind2;                                                    // ind2 has higher crowding distance
         else if (CPseudoRandom::randDouble() < 0.5)                         // ind1 = ind2 than we have to select randomly
             return ind1;

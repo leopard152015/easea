@@ -18,7 +18,7 @@ class CRankComparator : public CComparator<TIndividual> {
 public:
 
          
-  int compare(TIndividual * ind1, TIndividual * ind2){
+  int match(TIndividual * ind1, TIndividual * ind2){
   if (ind1 == nullptr)
     return 1;
   else if (ind2 == nullptr)

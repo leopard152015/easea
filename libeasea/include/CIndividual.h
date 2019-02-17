@@ -18,8 +18,9 @@ class CRandomGenerator;
 
 class CIndividual {
 
-protected :
+//protected :
 /*  Parametres for multi-objectives algorithmes  */
+public:
     int nbVar_;           // Number of variables
     int nbObj_;           // Number of objectives
     int nbConstraints_;   // Number of constraints
@@ -36,14 +37,14 @@ protected :
 public :
     // Functions for multi_objectives algorithmes
     void setObjective(int index, double val);
-    double getObjective(const int &index);
+    double getObjective(const int index);
     void setAllObjectives(double* __restrict out, double* __restrict in);
     void setAllVariables(CVariable ** __restrict out, CVariable ** __restrict in);
 
-    int getRank()  { return rank_; }
+    int getRank()const  { return rank_; }
     void setRank(int val){ rank_ = val; }
 
-    double getCrowdingDistance() { return crowdingDistance_; }
+    double getCrowdingDistance()const { return crowdingDistance_; }
     void setCrowdingDistance(double val){ crowdingDistance_ = val; }
 
     CVariable ** getIndividualVariables()  { return variable_; }
@@ -83,11 +84,6 @@ public:
 
     static unsigned getCrossoverArrity(){ return 2; }
     float getFitness(){ return this->fitness; }
-
-    virtual string toString(){};
-
-
-
 
 
 };

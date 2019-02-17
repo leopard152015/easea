@@ -15,7 +15,7 @@ _______________________________________________________________*/
 #include <math.h>
 
 
-#define NB_VARIABLES 7
+#define NB_VARIABLES 20
 #define NB_OBJECTIVES 3
 #define NB_CONSTRAINTS 0
 #define XOVER_PROB  0.9

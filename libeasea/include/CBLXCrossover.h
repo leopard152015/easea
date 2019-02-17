@@ -68,7 +68,6 @@ private:
         offSpring[1] = new TIndividual(parent2);
 
         double rand;
-        double i; 
         double y2; 
         double y1;
         double x2;

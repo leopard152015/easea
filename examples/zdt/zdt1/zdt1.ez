@@ -19,7 +19,7 @@ _______________________________________________________________*/
 #include <math.h>
 
 
-#define NB_VARIABLES 5
+#define NB_VARIABLES 30
 #define NB_OBJECTIVES 2
 #define NB_CONSTRAINTS 0
 #define XOVER_PROB  0.9

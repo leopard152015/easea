@@ -14,14 +14,14 @@ template<typename TIndividual>
 class CCrowdingDistanceComparator : public CComparator<TIndividual> {
 
 public:
-  int compare(TIndividual * ind1, TIndividual * ind2){
+  int match(TIndividual * ind1, TIndividual * ind2){
   if (ind1 == nullptr)
     return 1;
   else if (ind2 == nullptr)
     return -1;
 
-  double dist1 = ind1->getCrowdingDistance();
-  double dist2 = ind2->getCrowdingDistance();
+  double dist1 = ind1->crowdingDistance_;
+  double dist2 = ind2->crowdingDistance_;
   if (dist1 >  dist2)
     return -1; //ind1 < ind2
 

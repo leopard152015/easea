@@ -111,7 +111,7 @@ int main(int argc, char** argv){
 #include "CCrowdingArchive.h"
 #include "CRandomSelection.h"
 #include "CDistance.h"
-#include "CRanking.h"
+#include "CRank.h"
 
 #include "CQMetrics.h"
 #include "CQMetricsHV.h"
@@ -396,12 +396,11 @@ void EvolutionaryAlgorithmImpl::runEvolutionaryMultiObjectivesLoop(){
 	PopulationImpl * offspringPopulation;
 	
   // read the parameters
-  int maxEvaluations = *(int *)getInputParameter("numberOfGenerations");
   int parentPopulationSize = *(int *)getInputParameter("parentPopulationSize");
   int offspringPopulationSize = *(int *) getInputParameter("offspringPopulationSize");
   int archivePopulationSize   = *(int *) getInputParameter("archivePopulationSize");
+  int maxEvaluations = *(int *)getInputParameter("numberOfGenerations")*offspringPopulationSize;
 
-  auto distance = new CDistance<IndividualImpl,PopulationImpl>();
   population = new PopulationImpl(parentPopulationSize);
 
   auto archivePopulation = new CCrowdingArchive<IndividualImpl, PopulationImpl>(archivePopulationSize, getNumberOfObjectives());
@@ -463,32 +462,32 @@ void EvolutionaryAlgorithmImpl::runEvolutionaryMultiObjectivesLoop(){
         } 
 	std::chrono::duration<double> tmDurTmp = std::chrono::system_clock::now()-tmStartTmp;
 	ostringstream msgTmp;
-	msgTmp << "Offspring production time (in sec.): " << tmDurTmp.count();
-	LOG_MSG(msgType::INFO, msgTmp.str());
+/*	msgTmp << "Offspring production time (in sec.): " << tmDurTmp.count();
+	LOG_MSG(msgType::INFO, msgTmp.str());*/
         delete[] parents;
-//auto ranking = new CRanking<IndividualImpl,PopulationImpl>(offspringPopulation, archivePopulation);
+//auto ranking = new CRank<IndividualImpl,PopulationImpl>(offspringPopulation, archivePopulation);
         
    /***********Update archive*****************/
    tmStartTmp = std::chrono::system_clock::now();
-   for (int i = 0; i < offspringPopulation->size(); i++) {
+   for (size_t i = 0; i < offspringPopulation->size(); i++) {
       IndividualImpl * ind = new IndividualImpl(offspringPopulation->get(i));
-      bool isAdded = archivePopulation->add(ind);
+      bool isAdded = archivePopulation->add(ind, false);
       if (isAdded == false) {
         delete ind;
       }
     }
 tmDurTmp = std::chrono::system_clock::now()-tmStartTmp;
-ostringstream msgTmp1;
-msgTmp1 << "Update Archive time (in sec.): " << tmDurTmp.count();
-LOG_MSG(msgType::INFO, msgTmp1.str());
+//ostringstream msgTmp1;
+//msgTmp1 << "Update Archive time (in sec.): " << tmDurTmp.count();
+//LOG_MSG(msgType::INFO, msgTmp1.str());
 
     //Select good individuals to create parent_pop for the next generation.
     
-    int remain = parentPopulationSize;
+    size_t remain = parentPopulationSize;
     //parentPopulationSize = archivePopulation->size();
     //Clear parent_pop
     //PopulationImpl * front = NULL;
-    for (int i=0;i<population->size();i++) {
+    for (size_t i=0;i<population->size();i++) {
       delete population->get(i);
     }
     population->clear();
@@ -498,17 +497,17 @@ LOG_MSG(msgType::INFO, msgTmp1.str());
     //Get the extreme solution of arch_pop
 //int p = archivePopulation->bestIndex(cp);
   
-    for (int k = 0; k < archivePopulation->size(); k++) {
+    for (size_t k = 0; k < archivePopulation->size(); k++) {
         population->add(new IndividualImpl(archivePopulation->get(k)));
     } 
 
-      int szPop = parentPopulationSize/2;
+      size_t szPop = parentPopulationSize/2;
     
       while ((remain > 0) && (remain > archivePopulation->size() )){
         
         if (remain > szPop ){
           IndividualImpl ** Pt = (IndividualImpl **)(selectRandomOperator->run(archivePopulation));
-          int r = cp->compare(Pt[0],Pt[1]);
+          int r = cp->match(Pt[0],Pt[1]);
           if (r == -1)
             population->add(new IndividualImpl(Pt[0]));
           else if (r == 1)
@@ -528,7 +527,7 @@ LOG_MSG(msgType::INFO, msgTmp1.str());
           else  if (Pt[0]->getRank() < Pt[1]->getRank())
             population->add(new IndividualImpl(Pt[0]));
           else {
-             int r = cp->compare(Pt[0],Pt[1]);
+             int r = cp->match(Pt[0],Pt[1]);
               if (r == -1)
                   population->add(new IndividualImpl(Pt[0]));
               else if (r == 1)
@@ -567,9 +566,9 @@ if (evaluations < maxEvaluations){
     result->add(new IndividualImpl(archivePopulation->get(i)));
   }
 */
-    auto ranking = new CRanking<IndividualImpl, PopulationImpl>(offspringPopulation);
+    auto ranking = new CRank<IndividualImpl, PopulationImpl>(offspringPopulation);
     PopulationImpl * result = new PopulationImpl(ranking->getSubfront(0)->size());
-    for (auto i=0; i < ranking->getSubfront(0)->size(); i++)
+    for (size_t i=0; i < ranking->getSubfront(0)->size(); i++)
         result->add(new IndividualImpl(ranking->getSubfront(0)->get(i)));
 
 
@@ -581,7 +580,7 @@ if (evaluations < maxEvaluations){
   //  delete ranking;
     delete population;
 #ifdef QMETRICS  
-    auto metrics = make_unique<CQMetrics>("solutions",PARETO_TRUE_FILE,2);
+    auto metrics = make_unique<CQMetrics>("solutions",PARETO_TRUE_FILE,getNumberOfObjectives());
     auto hv = metrics->getMetric<CQMetricsHV>();
     auto gd = metrics->getMetric<CQMetricsGD>();
     auto igd = metrics->getMetric<CQMetricsIGD>();
@@ -615,7 +614,7 @@ PopulationImpl::PopulationImpl() {
       
 } 
 
-PopulationImpl::PopulationImpl (int maxSize) : capacity_(maxSize){
+PopulationImpl::PopulationImpl (size_t maxSize) : capacity_(maxSize){
     
 }
 
@@ -627,10 +626,10 @@ PopulationImpl::~PopulationImpl(){
 PopulationImpl * PopulationImpl::join(PopulationImpl *another) {
     PopulationImpl *result =
         new PopulationImpl(pop_vect.size()+another->size());
-    for (auto i=0; i < pop_vect.size(); ++i) 
+    for (size_t i=0; i < pop_vect.size(); ++i) 
         result->add(new IndividualImpl(this->get(i)));
   
-    for (auto i=0; i < another->size(); ++i) 
+    for (size_t i=0; i < another->size(); ++i) 
         result->add(new IndividualImpl(another->get(i)));
   
     return result;
@@ -646,7 +645,7 @@ bool PopulationImpl::add(int index, IndividualImpl * indiv) {
     return true;
 }
 
-IndividualImpl * PopulationImpl::get(int ind){
+IndividualImpl * PopulationImpl::get(size_t ind){
     if (ind < 0 || ind >= pop_vect.size())
         LOG_ERROR(errorCode::value, "index of PopulationImpl is out of range")
 
@@ -667,16 +666,16 @@ void PopulationImpl::sort(CComparator<IndividualImpl> * comparator){
   if (comparator == nullptr)
      LOG_ERROR(errorCode::target_specific, " there is no criterium for comparing");
 
-  for (auto i = 0; i < pop_vect.size(); ++i) {
-    for (auto j = i+1; j < pop_vect.size(); ++j) {
-      if ((comparator->compare(pop_vect[i],pop_vect[j]))==1) {
+  for (size_t i = 0; i < pop_vect.size(); ++i) {
+    for (size_t j = i+1; j < pop_vect.size(); ++j) {
+      if ((comparator->match(pop_vect[i],pop_vect[j]))==1) {
     //      swap<IndividualImpl>(pop_vect[i], pop_vect[j]);
           std::swap(pop_vect[i], pop_vect[j]);
       }
     }
   }
 }
-void PopulationImpl::remove(int i) {
+void PopulationImpl::remove(size_t i) {
   if (i < 0 || i >= pop_vect.size()) {
     LOG_ERROR(errorCode::value, "index of individual is out of range");
     
@@ -692,9 +691,9 @@ int PopulationImpl::indexWorst(CComparator<IndividualImpl> * comparator){
   IndividualImpl * worstKnown = pop_vect[0];
   IndividualImpl * candidateSolution;
   int flag;
-  for (int i = 1; i < pop_vect.size(); i++) {
+  for (size_t i = 1; i < pop_vect.size(); i++) {
     candidateSolution = pop_vect[i];
-    flag = comparator->compare(worstKnown, candidateSolution);
+    flag = comparator->match(worstKnown, candidateSolution);
     if (flag == -1) {
       index = i;
       worstKnown = candidateSolution;
@@ -711,9 +710,9 @@ int PopulationImpl::indexBest(CComparator<IndividualImpl> * comparator){
   IndividualImpl * bestKnown = pop_vect[0];
   IndividualImpl * candidateSolution;
   int flag;
-  for (int i = 1; i < pop_vect.size(); i++) {
+  for (size_t i = 1; i < pop_vect.size(); i++) {
     candidateSolution = pop_vect[i];
-    flag = comparator->compare(bestKnown, candidateSolution);
+    flag = comparator->match(bestKnown, candidateSolution);
     if (flag == 1) {
       index = i;
       bestKnown = candidateSolution;
@@ -813,24 +812,24 @@ public:
 
 
 class PopulationImpl {
-private:
-int capacity_;
+public:
+size_t capacity_;
 public :
 std::vector<IndividualImpl*> pop_vect;
 public:
     PopulationImpl();
-    PopulationImpl(int maxSize);
+    PopulationImpl(size_t maxSize);
     ~PopulationImpl();
     PopulationImpl * join(PopulationImpl * another);
     bool add(IndividualImpl * indiv);
   	bool add(int index, IndividualImpl * indiv);
-    IndividualImpl *get(int index);
+    IndividualImpl *get(size_t index);
     inline auto size() const { return pop_vect.size(); }
     void clear(){ pop_vect.clear(); }
     int indexWorst(CComparator<IndividualImpl> * comparator);
     int indexBest(CComparator<IndividualImpl> * comparator);
 
-    void remove(int id);
+    void remove(size_t id);
     void sort(CComparator<IndividualImpl> * comparator);
     void printObjectivesToFile(string path);
     void printVariablesToFile(string file);	
@@ -897,7 +896,8 @@ ifneq ("$(OS)","")
 endif
 
 #USER MAKEFILE OPTIONS :
-\INSERT_MAKEFILE_OPTION#END OF USER MAKEFILE OPTIONS
+\INSERT_MAKEFILE_OPTION
+#END OF USER MAKEFILE OPTIONS
 
 TARGET =	EASEA
 
@@ -910,7 +910,7 @@ $(TARGET):	$(OBJS)
 
 all:	$(TARGET)
 clean:
-ifneq ("^$(OS)","")
+ifneq ("$(OS)","")
 	-del $(OBJS) $(TARGET).exe
 else
 	rm -f $(OBJS) $(TARGET)

@@ -24,8 +24,7 @@ public :
     CQMetricsFunctions *getFunctions(){ return functions; };
     CQMetricsAbs() { functions = new CQMetricsFunctions(); }
     virtual ~CQMetricsAbs(){ delete functions; };
-    virtual double calculate(double** front, int nbPoints, int nbObj){};
-    virtual double get(vector< vector<double> > takenFront, vector< vector<double> > realFront, int nbObj) {};
+//    virtual double get(vector< vector<double> > takenFront, vector< vector<double> > realFront, int nbObj) {};
 
 };
 #endif /* CQMETRICSABS */

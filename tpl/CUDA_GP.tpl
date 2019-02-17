@@ -894,9 +894,12 @@ void ParametersImpl::setDefaultParameters(int argc, char** argv){
         this->plotOutputFilename = (char*)"EASEA.png";
 
 	this->remoteIslandModel = setVariable("remoteIslandModel",\REMOTE_ISLAND_MODEL);
-    this->ipFile = (char*)setVariable("ipFile","\IP_FILE").c_str();
-    this->migrationProbability = setVariable("migrationProbability",(float)\MIGRATION_PROBABILITY);
-    this->serverPort = setVariable("serverPort",\SERVER_PORT);
+//    	this->ipFile = (char*)setVariable("ipFile","\IP_FILE").c_str();
+	std::string *ipFilename = new std::string();
+	*ipFilename = setVariable("ipFile", "\IP_FILE");
+	this->ipFile = (char *)ipFilename->c_str();
+	this->migrationProbability = setVariable("migrationProbability",(float)\MIGRATION_PROBABILITY);
+	this->serverPort = setVariable("serverPort",\SERVER_PORT);
 
 }
 
@@ -955,7 +958,7 @@ void EvolutionaryAlgorithmImpl::initializeParentPopulation(){
 EvolutionaryAlgorithmImpl::EvolutionaryAlgorithmImpl(Parameters* params) : CEvolutionaryAlgorithm(params){
 
   // warning cstats parameter is null
-  this->population = (CPopulation*)new PopulationImpl(this->params->parentPopulationSize,this->params->offspringPopulationSize, this->params->pCrossover,this->params->pMutation,this->params->pMutationPerGene,this->params->randomGenerator,this->params,NULL);
+  this->population = (CPopulation*)new PopulationImpl(this->params->parentPopulationSize,this->params->offspringPopulationSize, this->params->pCrossover,this->params->pMutation,this->params->pMutationPerGene,this->params->randomGenerator,this->params, this->cstats); // NULL);
   int popSize = (params->parentPopulationSize>params->offspringPopulationSize?params->parentPopulationSize:params->offspringPopulationSize);
   ((PopulationImpl*)this->population)->cudaBuffer = (void*)malloc(sizeof(IndividualImpl)*( popSize ));
   

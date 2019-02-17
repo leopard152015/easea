@@ -42,7 +42,9 @@ public:
 
     ~CSBXCrossover(){}
 
-    TIndividual ** run(const TIndividual *const * parents){
+//    TIndividual ** run(const TIndividual *const * parents){
+    TIndividual ** run( TIndividual **parents){
+
         return crossover(get<double>(0), get<double>(1), parents[0], parents[1]);
     }
 
@@ -54,7 +56,7 @@ private:
       * More info: Appendix A. Page 30.
       * URL: http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.33.7291&rep=rep1&type=pdf
      */
-    TIndividual ** crossover(const double &probability, const double &distributionId, const TIndividual * parent1, const TIndividual * parent2){
+    TIndividual ** crossover(const double &probability, const double &distributionId,  TIndividual * parent1,  TIndividual * parent2){
 
         TIndividual** offSpring = new TIndividual*[2];
 

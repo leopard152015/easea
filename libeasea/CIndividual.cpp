@@ -42,9 +42,9 @@ void CIndividual::setAllVariables(CVariable ** __restrict out, CVariable ** __re
         out[i] = (CDoubleType*)in[i]->deepCopy();
 }
 
-double CIndividual::getObjective(const int &index) {
-    if (index < 0 || index >= nbObj_)
-        LOG_ERROR(errorCode::value, "index of CIndividual is out of range");
+double CIndividual::getObjective(const int index) {
+//    if (index < 0 || index >= nbObj_)
+//        LOG_ERROR(errorCode::value, "index of CIndividual is out of range");
     return objective_[index];
 }
 

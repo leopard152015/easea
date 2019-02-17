@@ -33,52 +33,44 @@ public:
          delete c_;
     };
 
-    int compare(TIndividual *ind1, TIndividual *ind2){
+    int match(TIndividual *ind1, TIndividual *ind2){
         if (ind1==nullptr)
             return 1;
         else if (ind2 == nullptr)
             return -1;
 
-        auto dominate1 = int{0}; // individual1 dominates
-        auto dominate2 = int{0} ; // individual2 dominates
-
-
-        auto flag = int{0}; // result of the comparison
-
-        if (ind1->getConstraint()!= ind2->getConstraint() &&
-            ((ind1->getConstraint() < 0) || (ind2->getConstraint() < 0))){
-
-            auto returnValue = int{c_->compare(ind1,ind2)};
-            return returnValue;
+        auto value1 = double {0.0};
+	auto value2 = double {0.0};
+	auto flag1 = int{0};
+	auto flag2 = int{0};
+	int nbObj = ind1->getNumberOfObjectives();
+	for(int i = 0; i < nbObj; ++i){
+	    value1 = ind1->objective_[i];
+	    value2 = ind2->objective_[i];
+	    if (value1 < value2)
+		flag1 = 1;
+	    else{
+		if (value1 > value2)
+		    flag2 = 1;
+	    }
+		
+	}
+        if (flag1==1 && flag2==0)
+        {
+    	    return -1;
         }
-        // If individuals have the equal number of  constraints.
-	// it's allowed to compare dominance
-        auto value1 = double{0.0};
-        auto value2 = double{0.0};
-        for (auto i = 0; i < ind1->getNumberOfObjectives(); i++) {
-            value1 = ind1->getObjective(i);
-            value2 = ind2->getObjective(i);
-            if (value1 < value2)
-                flag = -1;
-            else if (value1 > value2)
-                flag = 1;
+        else
+        {
+            if (flag1==0 && flag2==1)
+            {
+        	return 1;
+    	    }
             else
-                flag = 0;
-
-            if (flag == -1)
-                dominate1 = 1;
-
-            if (flag == 1)
-                dominate2 = 1;
+            {
+               return 0;
+            }
         }
 
-        if (dominate1 == dominate2)
-            return 0; // individual1 = individual2
-
-        if (dominate1 == 1)
-            return -1; //individual1 dominate
-
-        return 1;    // individual2 dominate
     };
 };
 

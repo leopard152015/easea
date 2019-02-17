@@ -760,8 +760,8 @@ int main(int argc, char *argv[]){
     else if (!mystricmp(sTemp,"asrea"))  {
       TARGET_FLAVOR = ASREA;
     }
-    else if (!mystricmp(sTemp,"asreaii"))  {
-      TARGET_FLAVOR = ASREAII;
+    else if (!mystricmp(sTemp,"fastemo"))  {
+      TARGET_FLAVOR = FASTEMO;
     }
 
     else if (!mystricmp(sTemp,"v"))  bVERBOSE=true;

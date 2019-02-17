@@ -18,7 +18,7 @@ class CComparator {
 
 public:
   virtual ~CComparator(){};
-  virtual int compare(T * ind1, T * ind2) = 0; // pure virtual function for comparing individuals
+  virtual int match(T * ind1, T * ind2) = 0; // pure virtual function for comparing individuals
 
 };
 

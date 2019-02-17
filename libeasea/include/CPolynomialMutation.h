@@ -34,14 +34,14 @@ public :
 
     ~CPolynomialMutation(){};
 
-    TIndividual * run(const TIndividual * individual){
+    TIndividual * run( TIndividual * individual){
         mutation(get<double>(0), get<double>(1), individual);
         return individual;
     };
 
 private:
 
-    TIndividual * mutation(const double &probability, const double &distributionId, const TIndividual * individual){
+    void  mutation(const double &probability, const double &distributionId,TIndividual * individual){
         double rnd, delta1, delta2, mut_pow, deltaq;
         double y, yl, yu, val, xy;
 
@@ -91,7 +91,7 @@ private:
             }
         }
 
-    };
+    }
 };
 
 #endif

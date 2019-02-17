@@ -41,8 +41,8 @@ public:
 	    best_=0;
 	    current_ = 0;
 	}
-	for (int i = current_; i< p->size(); i++){
-	     if (dominance_->compare(p->get(i),p->get(best_)) < 0)
+	for (size_t i = current_; i< p->size(); i++){
+	     if (dominance_->match(p->get(i),p->get(best_)) < 0)
 		best_ = i;
 	}
 	current_ = p->size();

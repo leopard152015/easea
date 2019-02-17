@@ -74,10 +74,12 @@ public:
     COperator(const T&... t) : parametres_(t...){};
 
     template<typename TElem>
-    auto get( const size_t id){
+    auto get( const long unsigned int id){
 
         if (id < size)
             return tupleAt<TElem>(parametres_, id);
+	return (TElem)0;
+	
     }
 
     virtual ~COperator(){};

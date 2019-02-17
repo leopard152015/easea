@@ -4,13 +4,13 @@ project(EASEA)
 SET(CMAKE_STATIC_LIBRARY_PREFIX="")
 INCLUDE_DIRECTORIES(libeasea/include cxxopts)
 
-ADD_DEFINITIONS(-std=c++14 -g -w -Wno-deprecated -Wno-write-strings -fmessage-length=0 )
+ADD_DEFINITIONS(-std=c++14 -w -Wno-deprecated -Wno-write-strings -fmessage-length=0 )
 
 
 if(WIN32)
   FILE(GLOB libeasea_src_win  "libeasea/win32/*.cpp" )
 endif(WIN32)
-
+set(CMAKE_CONFIGURATION_TYPES "Release" CACHE STRING "" FORCE)
 #Libeasea static library
 FILE(GLOB libeasea_src libeasea/*.cpp )
 ADD_LIBRARY( libeasea STATIC ${libeasea_src} ${libeasea_src_win})
@@ -32,6 +32,7 @@ SET(easea_src
 ADD_EXECUTABLE(easea ${easea_src})
 ADD_DEPENDENCIES(easea Lexer Parser)
 SET_TARGET_PROPERTIES(easea PROPERTIES COMPILE_FLAGS "")
+TARGET_LINK_LIBRARIES(easea libeasea)
 ADD_CUSTOM_COMMAND(TARGET easea POST_BUILD 
                     COMMAND $(CMAKE_COMMAND) -E copy libeasea.a libeasea/
                    )

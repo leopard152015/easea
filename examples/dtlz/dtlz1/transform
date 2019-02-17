@@ -1,2 +1,0 @@
-sed -i $'s/\t/ /g' DTLZ1_2D.dat : delete tab
-sed 's/ *$//' DTLZ1_3D.dat > out : delete last space

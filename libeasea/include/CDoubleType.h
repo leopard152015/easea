@@ -32,9 +32,9 @@ public:
 
   	~CDoubleType(){};
 
-  	inline double getValue() {return value_; } ;
+  	inline const double getValue() const{return value_; } ;
   	inline void setValue (const double &value) { value_ = value; };
-  	CVariable * deepCopy(){ CDoubleType * cp = new CDoubleType(this); return cp;};
+  	CVariable * deepCopy(){CDoubleType * cp = new CDoubleType(this); return cp;};
   	double getLowerBound()  { return lowerBound_; };
   	double getUpperBound()  { return upperBound_; };
   	void setLowerBound(const double &bound) { lowerBound_ = bound; };

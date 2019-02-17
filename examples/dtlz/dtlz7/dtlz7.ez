@@ -15,11 +15,11 @@ _______________________________________________________________*/
 #include <math.h>
 
 
-#define NB_VARIABLES 7
+#define NB_VARIABLES 30
 #define NB_OBJECTIVES 3
 #define NB_CONSTRAINTS 0
 #define XOVER_PROB  0.9
-#define XOVER_DIST_ID 0.5 //20.0
+#define XOVER_DIST_ID 20.0 //0.5 //20.0
 #define MUT_PROB  1.0/NB_VARIABLES
 #define MUT_DIST_ID 20.0
 #define QMETRICS 

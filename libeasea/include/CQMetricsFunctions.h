@@ -63,7 +63,8 @@ public:
 		    maxValues.push_back(-std::numeric_limits<double>::max());
 
 	    for (const auto& row : front){
-             for (auto j = 0; j < row.size(); j++) {
+             for (size_t j = 0; j < row.size(); j++) {
+	
                     if (row[j] > maxValues[j])
 				    maxValues[j] = row[j];
 		    }
@@ -80,7 +81,7 @@ public:
             minValues.push_back(std::numeric_limits<double>::max());
 
         for (const auto& row : front){
-            for (auto j = 0; j < row.size(); j++) {
+            for (size_t j = 0; j < row.size(); j++) {
                 if (row[j] < minValues[j])
                     minValues[j] = row[j];
              }
@@ -92,7 +93,7 @@ public:
 
         double distance = 0.0;
 
-        for (auto i = 0; i < a.size(); i++)
+        for (size_t i = 0; i < a.size(); i++)
             distance += power<2>(a[i]-b[i]);
 
 
@@ -118,7 +119,7 @@ public:
 
         for (const auto& row : front){
             vector<double> list;
-            for (auto j = 0; j < row.size(); j++)
+            for (size_t j = 0; j < row.size(); j++)
                 list.push_back((row[j] - minValue[j]) / (maxValue[j] - minValue[j]));
 
             normalizedFront.push_back(list);

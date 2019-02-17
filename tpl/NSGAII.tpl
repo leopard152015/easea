@@ -109,7 +109,7 @@ int main(int argc, char** argv){
 #include "CPolynomialMutation.h"
 #include "CCrowdingComparator.h"
 #include "CDistance.h"
-#include "CRanking.h"
+#include "CRank.h"
 
 #include "CQMetrics.h"
 #include "CQMetricsHV.h"
@@ -397,10 +397,10 @@ void EvolutionaryAlgorithmImpl::runEvolutionaryMultiObjectivesLoop(){
 	PopulationImpl * unionPopulation;
   
     // read the parameters
-    int maxEvaluations = *(int *)getInputParameter("numberOfGenerations");
     int parentPopulationSize = *(int *)getInputParameter("parentPopulationSize");
     int offspringPopulationSize = *(int *) getInputParameter("offspringPopulationSize");
- 
+    int maxEvaluations = *(int *)getInputParameter("numberOfGenerations")*offspringPopulationSize;
+
 
     auto distance = new CDistance<IndividualImpl,PopulationImpl>();
     population = new PopulationImpl(parentPopulationSize);
@@ -429,7 +429,7 @@ void EvolutionaryAlgorithmImpl::runEvolutionaryMultiObjectivesLoop(){
         population->add(newIndividual);
     } 
     LOG_MSG(msgType::INFO, "Random Initialization of Population is finished");
-    
+    CRank<IndividualImpl, PopulationImpl> *ranking;
     while (evaluations < maxEvaluations) {
 
         // Create the offSpring solutionSet
@@ -450,9 +450,7 @@ void EvolutionaryAlgorithmImpl::runEvolutionaryMultiObjectivesLoop(){
                 mutationOperator->run(offSpring[1]);
 
                 offSpring[0]->evaluate();
-                //offSpring[0]->evaluateConstraints();
                 offSpring[1]->evaluate();
-                //offSpring[1]->evaluateConstraints();
                 offspringPopulation->add(offSpring[0]);
                 offspringPopulation->add(offSpring[1]);
                 evaluations += 2;
@@ -468,13 +466,13 @@ void EvolutionaryAlgorithmImpl::runEvolutionaryMultiObjectivesLoop(){
         delete offspringPopulation;
     
         // Ranking the union
-        auto ranking = new CRanking<IndividualImpl, PopulationImpl>(unionPopulation);
+        ranking = new CRank<IndividualImpl, PopulationImpl>(unionPopulation);
 
-        int remain = parentPopulationSize;
+        size_t remain = parentPopulationSize;
         int index = 0;
         PopulationImpl * front = nullptr;
-        for (auto i=0; i < population->size(); i++) 
-            delete population->get(i);
+        for (size_t i=0; i < population->size(); i++) 
+            delete population->pop_vect[i];
         
         population->clear();
     
@@ -483,11 +481,11 @@ void EvolutionaryAlgorithmImpl::runEvolutionaryMultiObjectivesLoop(){
         
         while ((remain > 0) && (remain >= front->size())) {
             //Assign crowding distance to individuals
-            distance->allocCrowdingDistance(front, getNumberOfObjectives());
+        //    distance->allocCrowdingDistance(front, getNumberOfObjectives());
       
             //Add the individuals of this front
-            for (auto k = 0; k < front->size(); k++) 
-                population->add(new IndividualImpl(front->get(k)));
+            for (size_t k = 0; k < front->size(); k++) 
+                population->add(new IndividualImpl(front->pop_vect[k]));
       
             //Decrement remain
             remain = remain - front->size();
@@ -499,16 +497,15 @@ void EvolutionaryAlgorithmImpl::runEvolutionaryMultiObjectivesLoop(){
         }
         // Remain is less than front(index).size, insert only the best one
         if (remain > 0) {  // front contains individuals to insert
-            distance->allocCrowdingDistance(front, getNumberOfObjectives());
+        //    distance->allocCrowdingDistance(front, getNumberOfObjectives());
             CComparator<IndividualImpl> * c = new CCrowdingComparator<IndividualImpl>();
             front->sort(c);
             delete c;
-            for (auto k = 0; k < remain; k++) 
-                population->add(new IndividualImpl(front->get(k)));  
+            for (size_t k = 0; k < remain; k++) 
+                population->add(new IndividualImpl(front->pop_vect[k]));  
             remain = 0;
         } 
       
-        delete ranking;
         delete unionPopulation;
     } 
 
@@ -519,9 +516,9 @@ void EvolutionaryAlgorithmImpl::runEvolutionaryMultiObjectivesLoop(){
         msg <<  "Total execution time (in sec.): " << tmDur.count();
         LOG_MSG(msgType::INFO, msg.str());
     // Return the first non-dominated front
-    auto ranking = new CRanking<IndividualImpl, PopulationImpl>(population);
+//    auto ranking = new CRank<IndividualImpl, PopulationImpl>(population);
     PopulationImpl * result = new PopulationImpl(ranking->getSubfront(0)->size());
-    for (auto i=0; i < ranking->getSubfront(0)->size(); i++) 
+    for (size_t i=0; i < ranking->getSubfront(0)->size(); i++) 
         result->add(new IndividualImpl(ranking->getSubfront(0)->get(i)));
   
 	LOG_MSG(msgType::INFO,"Variables values are in file variables");
@@ -578,10 +575,10 @@ PopulationImpl::~PopulationImpl(){
 PopulationImpl * PopulationImpl::join(PopulationImpl *another) {
     PopulationImpl *result =
         new PopulationImpl(pop_vect.size()+another->size());
-    for (auto i=0; i < pop_vect.size(); ++i) 
+    for (size_t i=0; i < pop_vect.size(); ++i) 
         result->add(new IndividualImpl(this->get(i)));
   
-    for (auto i=0; i < another->size(); ++i) 
+    for (size_t i=0; i < another->size(); ++i) 
         result->add(new IndividualImpl(another->get(i)));
   
     return result;
@@ -597,9 +594,9 @@ bool PopulationImpl::add(int index, IndividualImpl * indiv) {
     return true;
 }
 
-IndividualImpl * PopulationImpl::get(int ind){
-    if (ind < 0 || ind >= pop_vect.size())
-        LOG_ERROR(errorCode::value, "index of PopulationImpl is out of range")
+IndividualImpl * PopulationImpl::get(size_t ind){
+//    if (ind < 0 || ind >= pop_vect.size())
+//        LOG_ERROR(errorCode::value, "index of PopulationImpl is out of range")
 
     return pop_vect[ind];
 }
@@ -618,9 +615,9 @@ void PopulationImpl::sort(CComparator<IndividualImpl> * comparator){
   if (comparator == nullptr)
      LOG_ERROR(errorCode::target_specific, " there is no criterium for comparing");
 
-  for (auto i = 0; i < pop_vect.size(); ++i) {
-    for (auto j = i+1; j < pop_vect.size(); ++j) {
-      if ((comparator->compare(pop_vect[i],pop_vect[j]))==1) {
+  for (size_t i = 0; i < pop_vect.size(); ++i) {
+    for (size_t j = i+1; j < pop_vect.size(); ++j) {
+      if ((comparator->match(pop_vect[i],pop_vect[j]))==1) {
     //      swap<IndividualImpl>(pop_vect[i], pop_vect[j]);
           std::swap(pop_vect[i], pop_vect[j]);
       }
@@ -719,8 +716,8 @@ public:
 
 
 class PopulationImpl {
-private:
-int capacity_;
+public:
+size_t capacity_;
 std::vector<IndividualImpl*> pop_vect;
 public:
     PopulationImpl();
@@ -729,7 +726,7 @@ public:
     PopulationImpl * join(PopulationImpl * another);
     bool add(IndividualImpl * indiv);
   	bool add(int index, IndividualImpl * indiv);
-    IndividualImpl *get(int index);
+    IndividualImpl *get(size_t index);
     inline auto size() const { return pop_vect.size(); }
     void clear(){ pop_vect.clear(); }
     void sort(CComparator<IndividualImpl> * comparator);
@@ -798,7 +795,8 @@ ifneq ("$(OS)","")
 endif
 
 #USER MAKEFILE OPTIONS :
-\INSERT_MAKEFILE_OPTION#END OF USER MAKEFILE OPTIONS
+\INSERT_MAKEFILE_OPTION
+#END OF USER MAKEFILE OPTIONS
 
 TARGET =	EASEA
 
@@ -811,7 +809,7 @@ $(TARGET):	$(OBJS)
 
 all:	$(TARGET)
 clean:
-ifneq ("^$(OS)","")
+ifneq ("$(OS)","")
 	-del $(OBJS) $(TARGET).exe
 else
 	rm -f $(OBJS) $(TARGET)

@@ -21,20 +21,20 @@ public:
   CCrowdingComparator() : CComparator<TIndividual>() { c_ = new CRankComparator<TIndividual>();};
   ~CCrowdingComparator() { delete c_; };
 
-  int compare(TIndividual * ind1, TIndividual * ind2){
+  int match(TIndividual * ind1, TIndividual * ind2){
   if (ind1 == nullptr)
     return 1;
   else if (ind2 == nullptr)
     return -1;
 
-  int flag = c_->compare(ind1,ind2); // Ranking comparator
+  int flag = c_->match(ind1,ind2); // Ranking comparator
 
   if (flag != 0)
     return flag;
 
   /* if ranks are the same => it must be crowding distance comparation */
-  double dist1 = ind1->getCrowdingDistance();
-  double dist2 = ind2->getCrowdingDistance();
+  double dist1 = ind1->crowdingDistance_;
+  double dist2 = ind2->crowdingDistance_;
   if (dist1 >  dist2)
     return -1;
 

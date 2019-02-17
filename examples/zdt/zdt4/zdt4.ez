@@ -16,11 +16,11 @@ _______________________________________________________________*/
 
 #include <math.h>
 
-#define NB_VARIABLES 5              // Number of variables
+#define NB_VARIABLES 10              // Number of variables
 #define NB_OBJECTIVES 2             // Number of objectives
 #define NB_CONSTRAINTS 0            // Number of constraints
 #define XOVER_PROB  0.9             // Crossover probability
-#define XOVER_DIST_ID  20.0         // Crossover distribution index
+#define XOVER_DIST_ID 0.5 //20.0         // Crossover distribution index
 #define MUT_PROB  1.0/NB_VARIABLES  // Mutation probability
 #define MUT_DIST_ID 20.0            // Mutation distribution index
 #define QMETRICS                    // Switch on quality indicator

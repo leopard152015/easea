@@ -19,8 +19,8 @@ class CVariable {
 public:
   
   virtual ~CVariable() = 0;
-  virtual CVariable * deepCopy() = 0;
-  virtual double getValue() = 0;
+  virtual const CVariable * deepCopy() = 0;
+  virtual const double getValue() const = 0;
   virtual void setValue(const double &value) = 0;
   virtual double getLowerBound() = 0;
   virtual double getUpperBound() = 0;

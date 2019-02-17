@@ -21,7 +21,7 @@ _______________________________________________________________*/
 #include <math.h>
 
 
-#define NB_VARIABLES 5              // Number of variables
+#define NB_VARIABLES 30              // Number of variables
 #define NB_OBJECTIVES 2             // Number of objectives
 #define NB_CONSTRAINTS 0            // Number of constraints
 #define XOVER_PROB  0.9             // Crossover probability

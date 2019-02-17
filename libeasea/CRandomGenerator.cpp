@@ -7,26 +7,24 @@
 
 #include "include/CRandomGenerator.h"
 #include "include/global.h"
-//#include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
 
 CRandomGenerator::CRandomGenerator(unsigned int seed){
-  this->seed = seed;
-  this->mt_rnd = new MTRand(seed);
-  //srand(seed);
+    this->seed = seed;
+    this->mt_rnd = new MTRand(seed);
 }
 CRandomGenerator::CRandomGenerator(){
-  srand(time(NULL));
-  seed = ((double) rand() / (double) (RAND_MAX ));
-  int j1;
+    srand(time(NULL));
+    seed = ((double) rand() / (double) (RAND_MAX ));
+    int j1;
 
-  for (j1=0; j1<=54;j1++) {
-    oldrand[j1] = .0;
-  } 
+    for (j1 = 0; j1 <= 54;j1++) {
+	oldrand[j1] = .0;
+    } 
 
-  jrand = 0;
-  warmup_random(seed);
+    jrand = 0;
+     warmup_random(seed);
 }
 
 CRandomGenerator::~CRandomGenerator(){
@@ -34,7 +32,6 @@ CRandomGenerator::~CRandomGenerator(){
 }
 
 int CRandomGenerator::randInt(){
-  //return rand();
   return mt_rnd->randInt();
 }
 
@@ -149,19 +146,6 @@ void CRandomGenerator::advance_random() {
   }
 }
   
-/*
-void CRandomGenerator::randomize() {
-  int j1;
-
-  for (j1=0; j1<=54;j1++) {
-    oldrand_[j1] = .0;
-  } // for
-    
-  jrand_ = 0;
-  warmup_random(seed);
-
-} // randomize
-*/
 double CRandomGenerator::randomperc() {
   jrand ++;
   if(jrand >= 55){
